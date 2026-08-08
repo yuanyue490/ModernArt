@@ -1,0 +1,137 @@
+@import "tailwindcss";
+
+@theme {
+  /* 黑 / 米白 / 深灰 —— UI 保持克制，色彩交给艺术品 */
+  --color-coal: #0d0c0a;
+  --color-coal-2: #14120f;
+  --color-paper: #f2eee5;
+  --color-paper-2: #e9e4d6;
+  --color-ink: #17150f;
+  --color-smoke: #8b857a;
+  --color-line: rgba(242, 238, 229, 0.14);
+  --color-line-strong: rgba(242, 238, 229, 0.32);
+  --color-line-dark: rgba(23, 21, 15, 0.16);
+
+  --font-display: "Archivo", "Noto Sans SC", system-ui, sans-serif;
+  --font-serifcn: "Noto Serif SC", "Songti SC", serif;
+  --font-sans: "Noto Sans SC", system-ui, sans-serif;
+
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+
+  --animate-dash-flow: dash-flow 1.4s linear infinite;
+  --animate-drift: drift 9s ease-in-out infinite;
+
+  @keyframes dash-flow {
+    to {
+      stroke-dashoffset: -20;
+    }
+  }
+  @keyframes drift {
+    0%,
+    100% {
+      transform: translateY(0);
+    }
+    50% {
+      transform: translateY(-7px);
+    }
+  }
+}
+
+html {
+  background: var(--color-coal);
+}
+
+body {
+  font-family: var(--font-sans);
+  color: var(--color-paper);
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
+}
+
+::selection {
+  background: var(--color-paper);
+  color: var(--color-ink);
+}
+
+/* 展开宽体展示字（Archivo 可变字宽轴） */
+.font-wide {
+  font-family: var(--font-display);
+  font-stretch: 118%;
+  letter-spacing: 0.01em;
+}
+
+.font-mono-num {
+  font-family: var(--font-display);
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.08em;
+}
+
+/* 描边空心大字 */
+.text-hollow {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(242, 238, 229, 0.28);
+}
+.text-hollow-dark {
+  color: transparent;
+  -webkit-text-stroke: 1.5px rgba(23, 21, 15, 0.22);
+}
+
+/* 地图上的连线 */
+.edge-base {
+  fill: none;
+  stroke: rgba(242, 238, 229, 0.24);
+  stroke-width: 1.4;
+  transition: opacity 0.35s ease;
+}
+.edge-ghost {
+  stroke-dasharray: 2 7;
+  opacity: 0.6;
+}
+.edge-lit {
+  stroke-width: 1.8;
+  stroke-dasharray: 4 6;
+  animation: var(--animate-dash-flow);
+}
+
+/* 地图漂浮（ prefers-reduced-motion 时整体禁用） */
+.node-float {
+  animation: var(--animate-drift);
+}
+
+/* 细颗粒噪点，避免纯平底色 */
+.grain::before {
+  content: "";
+  position: fixed;
+  inset: -50%;
+  z-index: 60;
+  pointer-events: none;
+  opacity: 0.05;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='240' height='240'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2'/%3E%3C/filter%3E%3Crect width='240' height='240' filter='url(%23n)' opacity='1'/%3E%3C/svg%3E");
+}
+
+.hide-scrollbar {
+  scrollbar-width: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* 详情页滚动条 */
+::-webkit-scrollbar {
+  width: 10px;
+}
+::-webkit-scrollbar-track {
+  background: var(--color-paper);
+}
+::-webkit-scrollbar-thumb {
+  background: var(--color-smoke);
+  border: 3px solid var(--color-paper);
+  border-radius: 6px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .node-float,
+  .edge-lit {
+    animation: none;
+  }
+}
