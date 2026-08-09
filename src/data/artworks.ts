@@ -13,7 +13,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Stone Breakers',
       artist: 'Gustave Courbet',
       year: '1849',
-      image: '/artworks/courbet-stonebreakers.jpg',
+      image: '/artworks/courbet-stonebreakers.webp',
       medium: '布面油画（毁于二战）',
       museum: '原藏德累斯顿',
       description:
@@ -27,7 +27,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Gleaners',
       artist: 'Jean-François Millet',
       year: '1857',
-      image: '/artworks/millet-gleaners.jpg',
+      image: '/artworks/millet-gleaners.webp',
       medium: '布面油画',
       museum: '奥赛博物馆，巴黎',
       description:
@@ -41,7 +41,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'A Burial at Ornans',
       artist: 'Gustave Courbet',
       year: '1849—50',
-      image: '/artworks/courbet-burial.jpg',
+      image: '/artworks/courbet-burial.webp',
       medium: '布面油画',
       museum: '奥赛博物馆，巴黎',
       description:
@@ -58,7 +58,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Impression, soleil levant',
       artist: 'Claude Monet',
       year: '1872',
-      image: '/artworks/impression-sunrise.jpg',
+      image: '/artworks/impression-sunrise.webp',
       medium: '布面油画',
       museum: '巴黎玛摩丹美术馆',
       description:
@@ -72,7 +72,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Bal du moulin de la Galette',
       artist: 'Pierre-Auguste Renoir',
       year: '1876',
-      image: '/artworks/moulin-galette.jpg',
+      image: '/artworks/moulin-galette.webp',
       medium: '布面油画',
       museum: '奥赛博物馆，巴黎',
       description:
@@ -86,7 +86,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Dance Class',
       artist: 'Edgar Degas',
       year: '1874',
-      image: '/artworks/degas-dance-class.jpg',
+      image: '/artworks/degas-dance-class.webp',
       medium: '布面油画',
       museum: '大都会艺术博物馆，纽约',
       description:
@@ -103,7 +103,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Starry Night',
       artist: 'Vincent van Gogh',
       year: '1889',
-      image: '/artworks/starry-night.jpg',
+      image: '/artworks/starry-night.webp',
       medium: '布面油画',
       museum: 'MoMA，纽约',
       description:
@@ -116,7 +116,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: "D'où venons-nous ? Que sommes-nous ? Où allons-nous ?",
       artist: 'Paul Gauguin',
       year: '1897—98',
-      image: '/artworks/gauguin-where.jpg',
+      image: '/artworks/gauguin-where.webp',
       medium: '布面油画',
       museum: '波士顿美术馆',
       description:
@@ -130,7 +130,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'A Sunday Afternoon on the Island of La Grande Jatte',
       artist: 'Georges Seurat',
       year: '1884—86',
-      image: '/artworks/grande-jatte.jpg',
+      image: '/artworks/grande-jatte.webp',
       medium: '布面油画',
       museum: '芝加哥艺术学院',
       description:
@@ -146,7 +146,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Mont Sainte-Victoire',
       artist: 'Paul Cézanne',
       year: '1902—04',
-      image: '/artworks/mont-sainte-victoire.jpg',
+      image: '/artworks/mont-sainte-victoire.webp',
       medium: '布面油画',
       museum: '费城艺术博物馆',
       description:
@@ -160,7 +160,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Basket of Apples',
       artist: 'Paul Cézanne',
       year: '1893',
-      image: '/artworks/basket-of-apples.jpg',
+      image: '/artworks/basket-of-apples.webp',
       medium: '布面油画',
       museum: '芝加哥艺术学院',
       description:
@@ -174,7 +174,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Card Players',
       artist: 'Paul Cézanne',
       year: '1890—95',
-      image: '/artworks/card-players.jpg',
+      image: '/artworks/card-players.webp',
       medium: '布面油画',
       museum: '奥赛博物馆，巴黎',
       description:
@@ -190,7 +190,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Woman with a Hat',
       artist: 'Henri Matisse',
       year: '1905',
-      image: '/artworks/woman-with-hat.jpg',
+      image: '/artworks/woman-with-hat.webp',
       medium: '布面油画',
       museum: '旧金山现代艺术博物馆',
       description:
@@ -204,7 +204,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Dance (I)',
       artist: 'Henri Matisse',
       year: '1909',
-      image: '/artworks/matisse-dance.jpg',
+      image: '/artworks/matisse-dance.webp',
       medium: '布面油画',
       museum: 'MoMA，纽约',
       description:
@@ -218,7 +218,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Charing Cross Bridge, London',
       artist: 'André Derain',
       year: '1906',
-      image: '/artworks/derain-charing-cross.jpg',
+      image: '/artworks/derain-charing-cross.webp',
       medium: '布面油画',
       museum: '——',
       description:
@@ -248,7 +248,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Portrait of Pablo Picasso',
       artist: 'Juan Gris',
       year: '1912',
-      image: '/artworks/gris-portrait-picasso.jpg',
+      image: '/artworks/gris-portrait-picasso.webp',
       medium: '布面油画',
       museum: '芝加哥艺术学院',
       description:
@@ -261,7 +261,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Still Life with Checked Tablecloth',
       artist: 'Juan Gris',
       year: '1915',
-      image: '/artworks/gris-still-life.jpg',
+      image: '/artworks/gris-still-life.webp',
       medium: '布面油画',
       museum: '大都会艺术博物馆，纽约',
       description:
@@ -277,7 +277,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The City Rises',
       artist: 'Umberto Boccioni',
       year: '1910',
-      image: '/artworks/city-rises.jpg',
+      image: '/artworks/city-rises.webp',
       medium: '布面油画',
       museum: 'MoMA，纽约',
       description:
@@ -304,7 +304,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Unique Forms of Continuity in Space',
       artist: 'Umberto Boccioni',
       year: '1913',
-      image: '/artworks/unique-forms.jpg',
+      image: '/artworks/unique-forms.webp',
       medium: '青铜',
       museum: '——',
       description:
@@ -321,7 +321,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Composition VII',
       artist: 'Wassily Kandinsky',
       year: '1913',
-      image: '/artworks/kandinsky-composition-7.jpg',
+      image: '/artworks/kandinsky-composition-7.webp',
       medium: '布面油画',
       museum: '特列季亚科夫画廊，莫斯科',
       description:
@@ -335,7 +335,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Large Blue Horses',
       artist: 'Franz Marc',
       year: '1911',
-      image: '/artworks/marc-blue-horses.jpg',
+      image: '/artworks/marc-blue-horses.webp',
       medium: '布面油画',
       museum: '沃克艺术中心，明尼阿波利斯',
       description:
@@ -352,7 +352,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Black Square',
       artist: 'Kazimir Malevich',
       year: '1915',
-      image: '/artworks/black-square.jpg',
+      image: '/artworks/black-square.webp',
       medium: '布面油画',
       museum: '特列季亚科夫画廊，莫斯科',
       description:
@@ -366,7 +366,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Suprematist Composition: White on White',
       artist: 'Kazimir Malevich',
       year: '1918',
-      image: '/artworks/white-on-white.jpg',
+      image: '/artworks/white-on-white.webp',
       medium: '布面油画',
       museum: 'MoMA，纽约',
       description:
@@ -380,7 +380,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Suprematist Composition',
       artist: 'Kazimir Malevich',
       year: '1916',
-      image: '/artworks/suprematist-composition.jpg',
+      image: '/artworks/suprematist-composition.webp',
       medium: '布面油画',
       museum: '——',
       description:
@@ -397,7 +397,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Beat the Whites with the Red Wedge',
       artist: 'El Lissitzky',
       year: '1919',
-      image: '/artworks/red-wedge.jpg',
+      image: '/artworks/red-wedge.webp',
       medium: '石版海报',
       museum: '——',
       description:
@@ -410,7 +410,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Monument to the Third International',
       artist: 'Vladimir Tatlin',
       year: '1919—20',
-      image: '/artworks/tatlin-tower.jpg',
+      image: '/artworks/tatlin-tower.webp',
       medium: '木材、金属（模型）',
       museum: '原始模型已散佚',
       description:
@@ -424,7 +424,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Proun 5A',
       artist: 'El Lissitzky',
       year: '1919',
-      image: '/artworks/lissitzky-proun.jpg',
+      image: '/artworks/lissitzky-proun.webp',
       medium: '布面油画',
       museum: '——',
       description:
@@ -453,7 +453,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Composition II in Red, Blue, and Yellow',
       artist: 'Piet Mondrian',
       year: '1930',
-      image: '/artworks/mondrian-composition-ii.jpg',
+      image: '/artworks/mondrian-composition-ii.webp',
       medium: '布面油画',
       museum: '苏黎世美术馆',
       description:
@@ -467,7 +467,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Counter-Composition V',
       artist: 'Theo van Doesburg',
       year: '1924',
-      image: '/artworks/doesburg-counter-composition.jpg',
+      image: '/artworks/doesburg-counter-composition.webp',
       medium: '布面油画',
       museum: '——',
       description:
@@ -481,7 +481,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Victory Boogie Woogie',
       artist: 'Piet Mondrian',
       year: '1942—44',
-      image: '/artworks/victory-boogie-woogie.jpg',
+      image: '/artworks/victory-boogie-woogie.webp',
       medium: '布面油画（未完成）',
       museum: '海牙市立博物馆',
       description:
@@ -498,7 +498,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Fountain',
       artist: 'Marcel Duchamp',
       year: '1917',
-      image: '/artworks/duchamp-fountain.jpg',
+      image: '/artworks/duchamp-fountain.webp',
       medium: '现成品（陶瓷小便池）',
       museum: '原作已佚，施蒂格利茨摄',
       description:
@@ -615,7 +615,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Composition VIII',
       artist: 'Wassily Kandinsky',
       year: '1923',
-      image: '/artworks/kandinsky-composition-8.jpg',
+      image: '/artworks/kandinsky-composition-8.webp',
       medium: '布面油画',
       museum: '古根海姆博物馆，纽约',
       description:
@@ -628,7 +628,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Senecio',
       artist: 'Paul Klee',
       year: '1922',
-      image: '/artworks/klee-senecio.jpg',
+      image: '/artworks/klee-senecio.webp',
       medium: '纱布油画',
       museum: '巴塞尔美术馆',
       description:
@@ -641,7 +641,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Bauhaus Building, Dessau',
       artist: 'Walter Gropius',
       year: '1925—26',
-      image: '/artworks/bauhaus-dessau.jpg',
+      image: '/artworks/bauhaus-dessau.webp',
       medium: '建筑',
       museum: '德绍，德国',
       description:
@@ -654,7 +654,7 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'A 19',
       artist: 'László Moholy-Nagy',
       year: '1927',
-      image: '/artworks/moholy-nagy-a19.jpg',
+      image: '/artworks/moholy-nagy-a19.webp',
       medium: '布面油画',
       museum: '——',
       description:
