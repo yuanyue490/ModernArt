@@ -325,8 +325,7 @@ export const movements: Movement[] = [
     influencedBy: ['surrealism'],
     influenced: ['pop-art'],
     map: { x: yearToX(1950), y: 40 },
-    ghost: true,
-    visualStyle: { motif: 'ghost', accent: '#8b857a' },
+    visualStyle: { motif: 'gesture', accent: '#3a3a38' },
   },
   {
     id: 'pop-art',
@@ -346,8 +345,7 @@ export const movements: Movement[] = [
     influencedBy: ['dada', 'abstract-expressionism'],
     influenced: ['postmodernism'],
     map: { x: yearToX(1962), y: 200 },
-    ghost: true,
-    visualStyle: { motif: 'ghost', accent: '#8b857a' },
+    visualStyle: { motif: 'pop', accent: '#c23a22' },
   },
   {
     id: 'conceptual-art',
@@ -401,12 +399,16 @@ export const movements: Movement[] = [
     question: '为什么一定存在一种正确的现代设计和艺术？',
     description:
       '后现代主义质疑现代主义追求统一、理性和纯粹的倾向。引用、拼贴、戏仿、混搭和大众文化重新进入艺术。历史不再被抛弃，而成为可以随意调用的素材库。',
-    artists: [],
+    artists: [
+      { id: 'sherman', name: 'Cindy Sherman', years: '1954—', note: '在自拍里扮演无数个“她”。' },
+      { id: 'koons', name: 'Jeff Koons', years: '1955—', note: '把庸俗商品做成不锈钢纪念碑。' },
+      { id: 'venturi', name: 'Robert Venturi', years: '1925—2018', note: '“少即是乏味”，向拉斯维加斯学习。' },
+      { id: 'kruger', name: 'Barbara Kruger', years: '1945—', note: '用广告语反问“谁”在说话。' },
+    ],
     influencedBy: ['bauhaus', 'pop-art'],
     influenced: ['contemporary'],
     map: { x: yearToX(1980), y: 120 },
-    ghost: true,
-    visualStyle: { motif: 'ghost', accent: '#8b857a' },
+    visualStyle: { motif: 'collage', accent: '#8a4a6a' },
   },
   {
     id: 'contemporary',
@@ -418,12 +420,16 @@ export const movements: Movement[] = [
     question: '当媒介已经没有边界，艺术还是什么？',
     description:
       '当代艺术不再由一种统一风格定义。装置、影像、互联网、数据、VR、电子游戏、生物技术、人工智能与社会实践都可以成为艺术媒介。艺术的重点越来越从"它看起来是什么"转向"它提出了什么问题"。',
-    artists: [],
+    artists: [
+      { id: 'hirst', name: 'Damien Hirst', years: '1965—', note: '把鲨鱼泡进甲醛，命名“死亡”。' },
+      { id: 'ai-weiwei', name: 'Ai Weiwei', years: '1957—', note: '用一亿颗陶瓷瓜子铺满大厅。' },
+      { id: 'eliasson', name: 'Olafur Eliasson', years: '1967—', note: '在美术馆里造出一轮太阳。' },
+      { id: 'teamLab', name: 'teamLab', years: '2001—', note: '让数字花海随观众呼吸。' },
+    ],
     influencedBy: ['conceptual-art', 'postmodernism'],
     influenced: [],
     map: { x: yearToX(2002), y: -60 },
-    ghost: true,
-    visualStyle: { motif: 'ghost', accent: '#8b857a' },
+    visualStyle: { motif: 'orbit', accent: '#4a6a8a' },
   },
 ]
 

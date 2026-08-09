@@ -200,6 +200,66 @@ export function NodeMotif({ motif, accent, size = 104 }: NodeMotifProps) {
         </g>
       )}
 
+      {motif === 'gesture' && (
+        /* 抽象表现主义：滴洒、泼溅、身体行动的痕迹（波洛克式） */
+        <g fill="none" strokeLinecap="round">
+          <path d="M14 30 Q38 18 52 38 T88 34" stroke={accent} strokeWidth="3.5" />
+          <path d="M18 62 Q44 48 60 66 T86 60" stroke="#c23a22" strokeWidth="2.6" opacity="0.9" />
+          <path d="M24 80 Q48 70 78 78" stroke="#d9a81c" strokeWidth="2" opacity="0.8" />
+          <path d="M30 22 Q50 44 72 26" stroke={paper} strokeWidth="1.6" opacity="0.6" />
+          {/* 滴溅的墨点 */}
+          <circle cx="40" cy="50" r="3" fill={accent} stroke="none" />
+          <circle cx="66" cy="46" r="2.2" fill="#c23a22" stroke="none" />
+          <circle cx="54" cy="72" r="2.6" fill={accent} stroke="none" opacity="0.85" />
+          <circle cx="78" cy="70" r="1.6" fill={paper} stroke="none" opacity="0.7" />
+          <circle cx="26" cy="44" r="1.8" fill={accent} stroke="none" opacity="0.7" />
+        </g>
+      )}
+
+      {motif === 'pop' && (
+        /* 波普艺术：本戴网点 + 高饱和撞色 + 重复符号 */
+        <g>
+          <defs>
+            <pattern id={`${uid}-dots`} width="7" height="7" patternUnits="userSpaceOnUse">
+              <circle cx="3.5" cy="3.5" r="1.7" fill={paper} opacity="0.9" />
+            </pattern>
+          </defs>
+          {/* 撞色底 */}
+          <rect x="18" y="22" width="64" height="56" fill={accent} />
+          <rect x="18" y="22" width="64" height="56" fill={`url(#${uid}-dots)`} opacity="0.5" />
+          {/* 重复的圆（汤罐/梦露式复制） */}
+          <circle cx="36" cy="42" r="13" fill="#c23a22" />
+          <circle cx="36" cy="42" r="13" fill={`url(#${uid}-dots)`} opacity="0.35" />
+          <circle cx="62" cy="42" r="13" fill="#d9a81c" />
+          <circle cx="62" cy="42" r="13" fill={`url(#${uid}-dots)`} opacity="0.35" />
+          <circle cx="49" cy="63" r="13" fill="#2456a6" />
+          <circle cx="49" cy="63" r="13" fill={`url(#${uid}-dots)`} opacity="0.35" />
+          <rect x="18" y="22" width="64" height="56" fill="none" stroke={paper} strokeWidth="1.6" opacity="0.6" />
+        </g>
+      )}
+
+      {motif === 'collage' && (
+        /* 后现代主义：引用、拼贴、戏仿、风格混搭 */
+        <g>
+          {/* 撕裂错位的不同时代碎片 */}
+          <polygon points="20,24 52,20 48,50 22,54" fill={accent} opacity="0.9" />
+          <polygon points="52,20 82,26 76,52 48,50" fill="#d9a81c" opacity="0.85" />
+          <rect x="24" y="54" width="26" height="26" fill="#2456a6" opacity="0.85" transform="rotate(-4 37 67)" />
+          {/* 古典柱式碎片（历史被调用） */}
+          <g fill={paper} opacity="0.9">
+            <rect x="60" y="58" width="4" height="22" />
+            <rect x="67" y="58" width="4" height="22" />
+            <rect x="74" y="58" width="4" height="22" />
+            <rect x="58" y="54" width="22" height="3.5" />
+            <rect x="58" y="80" width="22" height="3.5" />
+          </g>
+          {/* 斜向的霓虹一笔（当代符号入侵） */}
+          <line x1="18" y1="78" x2="56" y2="30" stroke="#c23a22" strokeWidth="3" strokeLinecap="round" opacity="0.9" />
+          <circle cx="30" cy="34" r="4" fill="#c23a22" opacity="0.9" />
+        </g>
+      )}
+
+
       {motif === 'ghost' && (
         /* 占位节点：尚未点亮的坐标 */
         <g fill="none" stroke={accent} opacity="0.85">

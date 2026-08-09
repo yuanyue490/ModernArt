@@ -46,6 +46,9 @@ export type MotifKind =
   | 'orbit' // 抽象艺术：即兴的色与形（康定斯基）
   | 'mask' // 原始主义：非洲 / 大洋洲面具几何
   | 'minimal' // 极简主义：重复的几何单元
+  | 'gesture' // 抽象表现主义：滴洒、泼溅、身体行动的痕迹
+  | 'pop' // 波普艺术：本戴网点、高饱和撞色、大众消费符号
+  | 'collage' // 后现代主义：引用、拼贴、戏仿、风格混搭
   | 'ghost' // 幽灵占位节点
 
 export interface Movement {
