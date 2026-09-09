@@ -1,18 +1,20 @@
 #!/usr/bin/env node
 /**
- * 多来源公有领域图片抓取（查找缺失作品图）：
+ * 多来源图片候选抓取（查找缺失作品图）：
  *   1. Wikimedia Commons（filetype:bitmap，宽 ≥1200，取 1800 宽缩略图）
  *   2. 大都会博物馆开放 API（仅 isPublicDomain / CC0）
  *   3. 芝加哥艺术学院 API（仅 public_domain，IIIF 1686px）
+ * 候选只写入系统临时目录，并同时保存来源 sidecar；不会进入 public/artworks。
  * 用法: node scripts/fetch-missing.mjs
- * 已存在的文件默认跳过，加 --force 重新抓。
+ * 已存在的候选默认跳过，加 --force 重新抓。
  */
-import { createWriteStream, existsSync, mkdirSync } from 'node:fs'
+import { createWriteStream, existsSync, mkdirSync, writeFileSync } from 'node:fs'
+import { tmpdir } from 'node:os'
 import { pipeline } from 'node:stream/promises'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
 
-const OUT = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public/artworks')
+const OUT = path.join(tmpdir(), 'modernart-artwork-candidates')
 const UA = 'ModernArt150/0.2 (educational art-history site; localhost dev)'
 const FORCE = process.argv.includes('--force')
 
@@ -221,16 +223,33 @@ async function fromCommons(query, mustMatch) {
   const api =
     'https://commons.wikimedia.org/w/api.php?action=query&format=json' +
     '&generator=search&gsrnamespace=6&gsrlimit=8&prop=imageinfo' +
-    '&iiprop=url|size|mime&iiurlwidth=1800&gsrsearch=' +
+    '&iiprop=url|size|mime|extmetadata&iiurlwidth=1800&gsrsearch=' +
     encodeURIComponent(query)
   const json = await (await get(api)).json()
   const pages = Object.values(json?.query?.pages ?? {})
   const cands = pages
     .map((p) => ({ title: p.title ?? '', ...(p.imageinfo?.[0] ?? {}) }))
-    .filter((ii) => ii.mime === 'image/jpeg' && ii.width >= 1200 && ii.thumburl && mustMatch.test(ii.title))
+    .filter((ii) => {
+      const license = ii.extmetadata?.LicenseShortName?.value ?? ''
+      return (
+        ii.mime === 'image/jpeg' &&
+        ii.width >= 1200 &&
+        ii.thumburl &&
+        mustMatch.test(ii.title) &&
+        /public domain|cc0|cc by|cc-by/i.test(license)
+      )
+    })
     .sort((a, b) => b.width - a.width)
   if (!cands.length) return null
-  return { url: cands[0].thumburl, note: `commons «${query}» ${cands[0].title} ${cands[0].width}w` }
+  const hit = cands[0]
+  return {
+    downloadUrl: hit.thumburl,
+    provider: 'Wikimedia Commons',
+    providerId: hit.title,
+    sourceUrl: hit.descriptionurl,
+    license: hit.extmetadata?.LicenseShortName?.value ?? '需人工复核',
+    note: `commons «${query}» ${hit.title} ${hit.width}w`,
+  }
 }
 
 /* ---- 来源 2: Met 开放 API ---- */
@@ -248,7 +267,14 @@ async function fromMet(query, mustMatch) {
         await get(`https://collectionapi.metmuseum.org/public/collection/v1/objects/${id}`)
       ).json()
       if (o?.isPublicDomain && o?.primaryImage && mustMatch.test(`${o.title} ${o.artistDisplayName}`)) {
-        return { url: o.primaryImage, note: `met «${query}» #${id} «${o.title}»` }
+        return {
+          downloadUrl: o.primaryImage,
+          provider: 'The Metropolitan Museum of Art',
+          providerId: String(id),
+          sourceUrl: o.objectURL,
+          license: 'CC0',
+          note: `met «${query}» #${id} «${o.title}»`,
+        }
       }
     } catch {
       /* 单条失败继续 */
@@ -269,7 +295,11 @@ async function fromAic(query, mustMatch) {
   )
   if (!hit) return null
   return {
-    url: `https://www.artic.edu/iiif/2/${hit.image_id}/full/1686,/0/default.jpg`,
+    downloadUrl: `https://www.artic.edu/iiif/2/${hit.image_id}/full/1686,/0/default.jpg`,
+    provider: 'Art Institute of Chicago',
+    providerId: String(hit.id),
+    sourceUrl: `https://www.artic.edu/artworks/${hit.id}`,
+    license: 'CC0',
     note: `aic «${query}» «${hit.title}»`,
   }
 }
@@ -307,10 +337,23 @@ for (const t of TARGETS) {
     continue
   }
   try {
-    await download(found.url, dest)
-    console.log(`OK   ${t.file}  ← ${found.note}`)
+    await download(found.downloadUrl, dest)
+    writeFileSync(
+      `${dest}.source.json`,
+      `${JSON.stringify(
+        {
+          artwork: t.label,
+          downloadedOn: new Date().toISOString(),
+          ...found,
+        },
+        null,
+        2,
+      )}\n`,
+    )
+    console.log(`CANDIDATE ${t.file}  ← ${found.note}`)
   } catch (e) {
     console.log(`FAIL ${t.file}  下载失败: ${e.message}`)
   }
 }
-console.log('done.')
+console.log(`done. 候选目录：${OUT}`)
+console.log('候选必须人工核对题名、艺术家、年份、构图和许可后，才能转为 WebP 并登记。')

@@ -1,7 +1,7 @@
-import { OY, yearToX } from '../../lib/world'
+import { OY, YEAR_MAX, YEAR_MIN, yearToX } from '../../lib/world'
 
 const TICKS: number[] = []
-for (let y = 1840; y <= 2020; y += 10) TICKS.push(y)
+for (let y = YEAR_MIN; y <= YEAR_MAX; y += 10) TICKS.push(y)
 
 const GIANT_YEARS = [1870, 1900, 1930, 1960, 1990]
 
@@ -14,7 +14,11 @@ export function TimeRuler() {
       {/* 顶部标尺横线 */}
       <div
         className="absolute h-px bg-line"
-        style={{ left: yearToX(1820), width: yearToX(2030) - yearToX(1820), top: OY - 560 }}
+        style={{
+          left: yearToX(YEAR_MIN),
+          width: yearToX(YEAR_MAX) - yearToX(YEAR_MIN),
+          top: OY - 560,
+        }}
       />
       {TICKS.map((y) => {
         const major = y % 20 === 0

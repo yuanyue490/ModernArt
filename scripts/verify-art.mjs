@@ -1,47 +1,182 @@
 #!/usr/bin/env node
-/* 字节级身份核验：本地图 vs 策展的 Commons 候选标题（width=1400 缩略图） */
-import { statSync } from 'node:fs'
-
-const UA = 'ModernArt150/0.2 (educational art-history site; localhost dev)'
+/**
+ * 本地作品图片与溯源元数据校验。
+ *
+ * 默认：结构错误退出 1，历史待复核项只警告。
+ * --strict：任何 needs-review 警告也退出 1，用作发布前内容门禁。
+ */
+import { createHash } from 'node:crypto'
+import { existsSync, readdirSync, readFileSync, statSync } from 'node:fs'
 import path from 'node:path'
 import { fileURLToPath } from 'node:url'
-const DIR = path.join(path.dirname(fileURLToPath(import.meta.url)), '../public/artworks')
 
-const FILES = {
-  'impression-sunrise.jpg': ['Monet - Impression, Sunrise.jpg', 'Claude Monet, Impression, soleil levant.jpg'],
-  'moulin-galette.jpg': ['Pierre-Auguste Renoir - Dance at Le Moulin de la Galette - Google Art Project.jpg', 'Auguste Renoir - Dance at Le Moulin de la Galette - Google Art Project.jpg', 'Pierre-Auguste Renoir, Le Moulin de la Galette.jpg'],
-  'degas-dance-class.jpg': ['The Dance Class (Degas, Metropolitan Museum of Art).jpg', 'Edgar Degas - The Dance Class - Google Art Project.jpg', 'Edgar Germain Hilaire Degas 019.jpg'],
-  'starry-night.jpg': ['Van Gogh - Starry Night - Google Art Project.jpg'],
-  'gauguin-where.jpg': ['Paul Gauguin - Where Do We Come From? What Are We? Where Are We Going? - Google Art Project.jpg', "Paul Gauguin - D'ou venons-nous.jpg", 'Where Do We Come From? What Are We? Where Are We Going? (Paul Gauguin).jpg'],
-  'grande-jatte.jpg': ['Georges Seurat - A Sunday on La Grande Jatte -- 1884 - Google Art Project.jpg', 'Georges Seurat - A Sunday Afternoon on the Island of La Grande Jatte - Google Art Project.jpg'],
-  'mont-sainte-victoire.jpg': ['Paul Cézanne - Mont Sainte-Victoire - Google Art Project.jpg', 'Paul Cézanne, 1902-04, Mont Sainte-Victoire, oil on canvas, 73 x 91.9 cm, Philadelphia Museum of Art.jpg', 'Cézanne - Montagne Sainte-Victoire (1904-06).jpg', 'Paul Cézanne 108.jpg'],
-  'basket-of-apples.jpg': ['Paul Cézanne, The Basket of Apples.jpg', 'Paul Cézanne - The Basket of Apples - 1926.252 - Art Institute of Chicago.jpg'],
-  'card-players.jpg': ['Paul Cézanne - The Card Players - Google Art Project.jpg', 'Les Joueurs de cartes, par Paul Cézanne.jpg', 'Paul Cezanne - The Card Players.jpg'],
-  'gris-portrait-picasso.jpg': ['Juan Gris - Portrait of Pablo Picasso - Google Art Project.jpg', 'Juan Gris - Portrait of Picasso - Google Art Project.jpg'],
-  'gris-still-life.jpg': ['Still Life with Checked Tablecloth Juan Gris 1915.jpeg', "Juan Gris - La bouteille d'anis - Google Art Project.jpg"],
-  'red-wedge.jpg': ['Beat the Whites with the Red Wedge.jpg', 'Klinom Krasnym Bej Belych.JPG'],
-  'tatlin-tower.jpg': ["Tatlin's Tower maket 1919 year.jpg", 'Tatlin 2.jpg'],
-  'lissitzky-proun.jpg': ['El Lissitzky - Proun 5A.jpg', 'Lissitzky Proun 93.jpg', 'El lissitzky, proun G.B.A., 1923 ca.jpg'],
-  'kandinsky-composition-8.jpg': ['Vassily Kandinsky, 1923 - Composition 8, huile sur toile, 140 cm x 201 cm, Musée Guggenheim, New York.jpg', 'Kandinsky - Composition 8, 1923.jpg', 'Wassily Kandinsky Composition VIII.jpg'],
-  'klee-senecio.jpg': ['Paul Klee, 1922, Senecio, oil on gauze, 40.3 × 37.4 cm, Kunstmuseum Basel.jpg', 'Senecio (Baldgreis), Klee 1080998.jpg'],
-  'bauhaus-dessau.jpg': ['Dessau Bauhaus-Gebäude asv2024-06 img1.jpg', 'Außenansichten des Bauhaus-Gebäudes in Dessau 07.jpg', 'Bauhaus Dessau-001.jpg'],
-}
+import { artworkImageMeta } from '../src/data/artworkImageMeta.ts'
+import { artworks } from '../src/data/artworks.ts'
 
-for (const [file, titles] of Object.entries(FILES)) {
-  let size
-  try { size = statSync(`${DIR}/${file}`).size } catch { console.log(`❓ ${file}  本地不存在`); continue }
-  let hit = null
-  for (const t of titles) {
-    const url = `https://commons.wikimedia.org/wiki/Special:FilePath/${encodeURIComponent(t)}?width=1400`
-    try {
-      const ctrl = new AbortController()
-      const to = setTimeout(() => ctrl.abort(), 15000)
-      const res = await fetch(url, { method: 'HEAD', headers: { 'User-Agent': UA }, signal: ctrl.signal })
-      clearTimeout(to)
-      const len = Number(res.headers.get('content-length') ?? 0)
-      if (res.ok && len === size) { hit = t; break }
-    } catch { /* try next */ }
+const ROOT = path.join(path.dirname(fileURLToPath(import.meta.url)), '..')
+const ARTWORKS_DIR = path.join(ROOT, 'public/artworks')
+const STRICT = process.argv.includes('--strict')
+
+const errors = []
+const warnings = []
+const infos = []
+const seenIds = new Set()
+const usedPaths = new Set()
+const retainedPaths = new Set()
+const hashes = new Map()
+const statusCount = new Map()
+let referenceCount = 0
+
+function webpDimensions(buffer) {
+  if (buffer.toString('ascii', 0, 4) !== 'RIFF' || buffer.toString('ascii', 8, 12) !== 'WEBP') {
+    throw new Error('不是有效的 WebP RIFF 文件')
   }
-  console.log(`${hit ? '✅' : '❌'} ${file}  ${size}b${hit ? `  <= ${hit}` : '  （无候选字节匹配，需人工复核）'}`)
+
+  const chunk = buffer.toString('ascii', 12, 16)
+  if (chunk === 'VP8 ') {
+    const marker = buffer.indexOf(Buffer.from([0x9d, 0x01, 0x2a]), 20)
+    if (marker === -1) throw new Error('无法读取 VP8 尺寸')
+    return {
+      width: buffer.readUInt16LE(marker + 3) & 0x3fff,
+      height: buffer.readUInt16LE(marker + 5) & 0x3fff,
+    }
+  }
+  if (chunk === 'VP8X') {
+    return {
+      width: 1 + buffer.readUIntLE(24, 3),
+      height: 1 + buffer.readUIntLE(27, 3),
+    }
+  }
+  if (chunk === 'VP8L') {
+    const bits = buffer.readUInt32LE(21)
+    return {
+      width: 1 + (bits & 0x3fff),
+      height: 1 + ((bits >> 14) & 0x3fff),
+    }
+  }
+  throw new Error(`不支持的 WebP 编码块：${chunk}`)
 }
-console.log('done.')
+
+for (const [movementId, movementArtworks] of Object.entries(artworks)) {
+  for (const artwork of movementArtworks) {
+    const key = `${movementId}/${artwork.id}`
+    if (seenIds.has(artwork.id)) errors.push(`${key}：作品 id 重复`)
+    seenIds.add(artwork.id)
+
+    const meta = artwork.imageMeta
+    if (!meta) {
+      errors.push(`${key}：缺少 imageMeta`)
+      continue
+    }
+    statusCount.set(meta.status, (statusCount.get(meta.status) ?? 0) + 1)
+
+    if (artwork.reference) {
+      referenceCount += 1
+      for (const field of ['provider', 'url', 'verifiedOn']) {
+        if (!artwork.reference[field]) errors.push(`${key}：作品资料缺少 ${field}`)
+      }
+      if (artwork.reference.url && !artwork.reference.url.startsWith('https://')) {
+        errors.push(`${key}：作品资料 URL 必须使用 HTTPS`)
+      }
+    } else {
+      warnings.push(`${key}：作品身份/馆藏资料来源待补`)
+    }
+
+    if (meta.retainedAsset) retainedPaths.add(meta.retainedAsset)
+
+    if (!artwork.image) {
+      if (meta.status === 'verified' || meta.status === 'needs-review') {
+        errors.push(`${key}：状态为 ${meta.status}，但没有 image`)
+      }
+      if (meta.sha256) errors.push(`${key}：无展示图片却记录了 sha256`)
+      continue
+    }
+
+    usedPaths.add(artwork.image)
+    if (!['verified', 'needs-review'].includes(meta.status)) {
+      errors.push(`${key}：有展示图片，但状态为 ${meta.status}`)
+    }
+    if (!artwork.image.startsWith('/artworks/') || !artwork.image.endsWith('.webp')) {
+      errors.push(`${key}：图片路径必须是 /artworks/*.webp`)
+      continue
+    }
+
+    for (const field of ['provider', 'sourceUrl', 'license', 'sha256']) {
+      if (!meta[field]) errors.push(`${key}：有图片但缺少 ${field}`)
+    }
+    if (meta.sourceUrl && !meta.sourceUrl.startsWith('https://')) {
+      errors.push(`${key}：sourceUrl 必须使用 HTTPS`)
+    }
+    if (meta.status === 'verified') {
+      for (const field of ['providerId', 'verifiedOn']) {
+        if (!meta[field]) errors.push(`${key}：verified 状态缺少 ${field}`)
+      }
+    } else if (meta.status === 'needs-review') {
+      warnings.push(`${key}：历史图片来源与许可仍待人工复核`)
+    }
+
+    const localPath = path.join(ROOT, 'public', artwork.image.slice(1))
+    if (!existsSync(localPath)) {
+      errors.push(`${key}：本地文件不存在 ${artwork.image}`)
+      continue
+    }
+    const size = statSync(localPath).size
+    if (size < 15_000) errors.push(`${key}：文件小于 15KB，疑似无效资源`)
+
+    const buffer = readFileSync(localPath)
+    try {
+      const { width, height } = webpDimensions(buffer)
+      if (Math.max(width, height) < 1200) {
+        errors.push(`${key}：图片尺寸 ${width}×${height}，长边不足 1200px`)
+      }
+    } catch (error) {
+      errors.push(`${key}：${error.message}`)
+    }
+
+    const sha256 = createHash('sha256').update(buffer).digest('hex')
+    if (meta.sha256 && sha256 !== meta.sha256) {
+      errors.push(`${key}：SHA-256 与元数据不一致`)
+    }
+    const duplicate = hashes.get(sha256)
+    if (duplicate) errors.push(`${key}：与 ${duplicate} 使用了相同图片`)
+    hashes.set(sha256, key)
+  }
+}
+
+for (const id of Object.keys(artworkImageMeta)) {
+  if (!seenIds.has(id)) errors.push(`imageMeta/${id}：找不到对应作品`)
+}
+
+for (const file of readdirSync(ARTWORKS_DIR).filter((name) => name.endsWith('.webp'))) {
+  const publicPath = `/artworks/${file}`
+  if (!usedPaths.has(publicPath) && !retainedPaths.has(publicPath)) {
+    errors.push(`${publicPath}：孤儿图片，未被作品引用且未登记为 retainedAsset`)
+  }
+}
+
+for (const retainedPath of retainedPaths) {
+  const localPath = path.join(ROOT, 'public', retainedPath.slice(1))
+  if (!existsSync(localPath)) errors.push(`${retainedPath}：登记为 retainedAsset，但文件不存在`)
+  infos.push(`${retainedPath}：保留的停用资源，不会在页面展示`)
+}
+
+const statuses = [...statusCount.entries()]
+  .sort(([a], [b]) => a.localeCompare(b))
+  .map(([status, count]) => `${status}=${count}`)
+  .join('，')
+
+console.log(
+  `作品 ${seenIds.size} 件；展示图 ${usedPaths.size} 张；作品资料 ${referenceCount}/${seenIds.size}；状态：${statuses}`,
+)
+for (const info of infos) console.log(`ℹ️ ${info}`)
+for (const warning of warnings) console.warn(`⚠️ ${warning}`)
+for (const error of errors) console.error(`❌ ${error}`)
+
+if (errors.length || (STRICT && warnings.length)) {
+  console.error(
+    `校验未通过：${errors.length} 个错误，${warnings.length} 个警告${STRICT ? '（strict）' : ''}`,
+  )
+  process.exitCode = 1
+} else {
+  console.log(`校验通过：0 个错误，${warnings.length} 个警告`)
+}

@@ -1,11 +1,14 @@
+import { artworkImageMeta } from './artworkImageMeta.ts'
 import type { Artwork } from './types'
 
+type ArtworkDraft = Omit<Artwork, 'imageMeta'>
+
 /**
- * 代表作品数据。image 指向 public/artworks/ 下的本地文件
- * （Wikimedia Commons 公有领域图片）；版权暂缺的作品不设 image，
- * 前端会以流派母题生成图形占位。
+ * 代表作品数据。image 指向 public/artworks/ 下的本地文件；
+ * 图片身份、许可和核验状态统一由 artworkImageMeta 补入。
+ * 版权受限、待补或作品身份存疑的条目不设 image。
  */
-export const artworks: Record<string, Artwork[]> = {
+const artworkData: Record<string, ArtworkDraft[]> = {
   realism: [
     {
       id: 'courbet-stonebreakers',
@@ -220,7 +223,7 @@ export const artworks: Record<string, Artwork[]> = {
       year: '1906',
       image: '/artworks/derain-charing-cross.webp',
       medium: '布面油画',
-      museum: '——',
+      museum: '美国国家美术馆，华盛顿',
       description:
         '泰晤士河的雾不见了，取而代之的是粉红色的水面、宝石般的船影与一根荧光绿的桥墩。',
       significance:
@@ -235,8 +238,16 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: "Les Demoiselles d'Avignon",
       artist: 'Pablo Picasso',
       year: '1907',
+      image: '/artworks/demoiselles.webp',
       medium: '布面油画',
       museum: 'MoMA，纽约',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/collection/works/79766',
+        objectId: '333.1939',
+        verifiedOn: '2026-08-28',
+        note: '馆藏页确认 1907 年巴黎版本；页面同时明确标注 Picasso Estate / ARS 版权声明。',
+      },
       description:
         '五张面孔带着非洲面具的棱角，身体被折成锋利的平面。空间碎裂，传统透视当场死亡。',
       significance:
@@ -291,8 +302,16 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Dynamism of a Dog on a Leash',
       artist: 'Giacomo Balla',
       year: '1912',
+      image: '/artworks/dog-leash.webp',
       medium: '布面油画',
-      museum: '奥尔布赖特-诺克斯美术馆，布法罗',
+      museum: 'Buffalo AKG Art Museum，布法罗',
+      reference: {
+        provider: 'Buffalo AKG Art Museum',
+        url: 'https://buffaloakg.org/artworks/196416-dinamismo-di-un-cane-al-guinzaglio-dynamism-dog-leash',
+        objectId: '1964:16',
+        verifiedOn: '2026-08-28',
+        note: '馆藏页确认题名、1912 年、媒介、尺寸与来源；页面图仍标 ARS / SIAE。',
+      },
       description:
         '腊肠狗的腿变成十几条重影，女士的裙摆与皮带一起晃动——时间被画进了同一张画。',
       significance:
@@ -300,13 +319,20 @@ export const artworks: Record<string, Artwork[]> = {
     },
     {
       id: 'unique-forms',
-      title: '空间连续的独特形体',
+      title: '空间中连续的唯一形态',
       titleOriginal: 'Unique Forms of Continuity in Space',
       artist: 'Umberto Boccioni',
       year: '1913',
       image: '/artworks/unique-forms.webp',
-      medium: '青铜',
-      museum: '——',
+      medium: '青铜（1931 或 1934 年铸造）',
+      museum: 'MoMA，纽约',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/collection/works/81179',
+        objectId: '231.1948',
+        verifiedOn: '2026-08-27',
+        note: '页面展示的是 MoMA 馆藏铸件；作品构思于 1913 年，铸造于 1931 或 1934 年。',
+      },
       description:
         '一个迈步向前的人体被风"吹"成流线型的铠甲，肌肉化作火焰般的曲面。',
       significance:
@@ -382,7 +408,7 @@ export const artworks: Record<string, Artwork[]> = {
       year: '1916',
       image: '/artworks/suprematist-composition.webp',
       medium: '布面油画',
-      museum: '——',
+      museum: '私人收藏（2008 年拍卖后）',
       description:
         '蓝色矩形、红色横梁与细碎几何体在白色空间里失重漂浮。',
       significance:
@@ -396,10 +422,16 @@ export const artworks: Record<string, Artwork[]> = {
       title: '用红色楔形打击白军',
       titleOriginal: 'Beat the Whites with the Red Wedge',
       artist: 'El Lissitzky',
-      year: '1919',
+      year: '1919—20',
       image: '/artworks/red-wedge.webp',
-      medium: '石版海报',
-      museum: '——',
+      medium: '石版画海报',
+      museum: '俄罗斯国家图书馆，莫斯科',
+      reference: {
+        provider: '俄罗斯国家图书馆（经 Wikimedia Commons）',
+        url: 'https://commons.wikimedia.org/wiki/File:Klinom_Krasnym_Bej_Belych.JPG',
+        verifiedOn: '2026-08-27',
+        note: '馆藏记录年份为 1919—1920；当前图为俄罗斯国家图书馆扫描。',
+      },
       description:
         '一个红色三角形刺入白色圆形——政治、几何与速度，被压缩成一个动作。',
       significance: '海报成为武器：抽象形式第一次大规模进入公共宣传。',
@@ -420,13 +452,20 @@ export const artworks: Record<string, Artwork[]> = {
     },
     {
       id: 'lissitzky-proun',
-      title: 'PROUN 5A',
-      titleOriginal: 'Proun 5A',
+      title: 'PROUN G.B.A.',
+      titleOriginal: 'Proun G.B.A.',
       artist: 'El Lissitzky',
-      year: '1919',
+      year: '约 1923',
       image: '/artworks/lissitzky-proun.webp',
       medium: '布面油画',
-      museum: '——',
+      museum: '海牙艺术博物馆',
+      reference: {
+        provider: 'Kunstmuseum Den Haag（经 Wikimedia Commons）',
+        url: 'https://commons.wikimedia.org/wiki/File:El_lissitzky,_proun_G.B.A.,_1923_ca.jpg',
+        objectId: '0333517',
+        verifiedOn: '2026-08-27',
+        note: '原条目的《Proun 5A》实际是 1920 年石版画；已改为与图片一致的馆藏油画《Proun G.B.A.》。',
+      },
       description:
         '漂浮的几何体重力尽失，介于绘画、建筑与装置之间。',
       significance:
@@ -439,7 +478,13 @@ export const artworks: Record<string, Artwork[]> = {
       artist: 'Alexander Rodchenko',
       year: '1924',
       medium: '石版海报',
-      museum: '——',
+      museum: '历史海报，多馆藏版本（当前未指定具体馆藏件）',
+      reference: {
+        provider: 'MoMA：Aleksandr Rodchenko',
+        url: 'https://www.moma.org/artists/4975-aleksandr-rodchenko',
+        verifiedOn: '2026-08-27',
+        note: '当前条目尚未指定一张具体馆藏海报；补图前需先锁定版本与馆藏编号。',
+      },
       description:
         '几何化的人脸喊出口号，摄影蒙太奇与粗体字一起爆炸。',
       significance: '平面设计的现代语法在此定型：对角线、无衬线、摄影蒙太奇。',
@@ -469,7 +514,13 @@ export const artworks: Record<string, Artwork[]> = {
       year: '1924',
       image: '/artworks/doesburg-counter-composition.webp',
       medium: '布面油画',
-      museum: '——',
+      museum: '阿姆斯特丹市立博物馆',
+      reference: {
+        provider: 'Stedelijk Museum Amsterdam',
+        url: 'https://www.stedelijk.nl/en/collection/531-theo-van-doesburg-contra-compositie-v',
+        objectId: 'A 567',
+        verifiedOn: '2026-08-27',
+      },
       description:
         '同样是三原色与黑白灰，但所有方块旋转了 45 度——对角线带来张力与动感。',
       significance:
@@ -477,13 +528,20 @@ export const artworks: Record<string, Artwork[]> = {
     },
     {
       id: 'victory-boogie-woogie',
-      title: '胜利百老汇',
+      title: '胜利爵士乐',
       titleOriginal: 'Victory Boogie Woogie',
       artist: 'Piet Mondrian',
       year: '1942—44',
       image: '/artworks/victory-boogie-woogie.webp',
       medium: '布面油画（未完成）',
       museum: '海牙市立博物馆',
+      reference: {
+        provider: 'Kunstmuseum Den Haag',
+        url: 'https://www.kunstmuseum.nl/en/collection/victory-boogie-woogie',
+        objectId: '0810747',
+        verifiedOn: '2026-08-28',
+        note: '馆藏页确认 1942—44 年未完成作品、材料、尺寸及馆藏身份；不得与《Broadway Boogie Woogie》混用。',
+      },
       description:
         '黑线消失了，彩色的马赛克小方块沿着网格跳动，像纽约街区的爵士乐。',
       significance:
@@ -512,8 +570,15 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'L.H.O.O.Q.',
       artist: 'Marcel Duchamp',
       year: '1919',
+      image: '/artworks/duchamp-lhooq.webp',
       medium: '明信片改绘',
-      museum: '——',
+      museum: '私人收藏',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/audio/playlist/352/4918',
+        verifiedOn: '2026-08-27',
+        note: '1919 年版本为私人收藏；作品另有多个后续版本，不能混用。',
+      },
       description:
         '在蒙娜丽莎的明信片复制品上画两撇小胡子，标题是一句法语谐音的双关玩笑。',
       significance:
@@ -528,8 +593,16 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Treachery of Images',
       artist: 'René Magritte',
       year: '1929',
+      image: '/artworks/magritte-treachery.webp',
       medium: '布面油画',
       museum: '洛杉矶郡立艺术博物馆',
+      reference: {
+        provider: 'LACMA',
+        url: 'https://collections.lacma.org/object/31931',
+        objectId: '78.7',
+        verifiedOn: '2026-08-28',
+        note: '馆藏页确认完整题名、1929 年、媒介与馆藏编号；页面图标注 C. Herscovici / ARS。',
+      },
       description:
         '一支画得极其工整的烟斗，下面一行字："这不是一支烟斗。"',
       significance:
@@ -542,7 +615,13 @@ export const artworks: Record<string, Artwork[]> = {
       artist: 'René Magritte',
       year: '1964',
       medium: '布面油画',
-      museum: '——',
+      museum: '私人收藏',
+      reference: {
+        provider: '比利时皇家美术馆 Magritte Museum',
+        url: 'https://fine-arts-museum.be/uploads/news/files/magritte_tribute_year_2017_pf_def_1.pdf',
+        verifiedOn: '2026-08-27',
+        note: '馆方资料确认作品题名与年份；现状按私人收藏记录。',
+      },
       description:
         '戴圆顶礼帽的男人面前悬着一颗青苹果，刚好挡住脸，只露出一只眼睛的边缘。',
       significance:
@@ -557,10 +636,16 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'Monument 1 for V. Tatlin',
       artist: 'Dan Flavin',
       year: '1964',
-      medium: '荧光灯管装置',
-      museum: '——',
+      medium: '荧光灯与金属灯具',
+      museum: 'MoMA，纽约',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/collection/works/81337',
+        objectId: '304.1992.a-h',
+        verifiedOn: '2026-08-27',
+      },
       description:
-        '一根市售荧光灯管斜 45 度钉在墙角，白色的光晕把墙角变成作品的一部分。',
+        '八根白色荧光灯管在墙面上逐级升高，像一座被压缩为工业光线的构成主义纪念碑。',
       significance:
         '用最普通的工业品、最简洁的姿态，向构成主义致敬——光本身成为雕塑。',
     },
@@ -572,6 +657,12 @@ export const artworks: Record<string, Artwork[]> = {
       year: '1966',
       medium: '120 块耐火砖',
       museum: '泰特美术馆，伦敦',
+      reference: {
+        provider: 'Tate',
+        url: 'https://www.tate.org.uk/art/artworks/andre-equivalent-viii-t01534',
+        objectId: 'T01534',
+        verifiedOn: '2026-08-28',
+      },
       description:
         '120 块标准耐火砖在地面上铺成两层矩形，没有任何固定、没有基座、没有修饰。',
       significance:
@@ -588,6 +679,13 @@ export const artworks: Record<string, Artwork[]> = {
       year: '1965',
       medium: '木椅、照片、文字定义',
       museum: 'MoMA，纽约',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/collection/works/81435',
+        objectId: '393.1970.a-c',
+        verifiedOn: '2026-08-28',
+        note: '馆藏页确认三个组成部分与具体馆藏版本；页面明确标注 Joseph Kosuth / ARS。',
+      },
       description:
         '一把真椅子、一张椅子的等大照片、一段词典里"椅子"的定义，并置在墙上。',
       significance:
@@ -600,7 +698,13 @@ export const artworks: Record<string, Artwork[]> = {
       artist: 'Yoko Ono',
       year: '1964',
       medium: '行为表演',
-      museum: '——',
+      museum: '行为作品（1964 年京都首演；无单一馆藏）',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/calendar/exhibitions/1494',
+        verifiedOn: '2026-08-27',
+        note: '作品曾多次演出；影像与照片必须分别注明具体演出、摄影者和馆藏。',
+      },
       description:
         '小野洋子端坐台上，邀请观众轮流上前，用剪刀剪下她衣服的一小片带走。',
       significance:
@@ -655,8 +759,13 @@ export const artworks: Record<string, Artwork[]> = {
       artist: 'László Moholy-Nagy',
       year: '1927',
       image: '/artworks/moholy-nagy-a19.webp',
-      medium: '布面油画',
-      museum: '——',
+      medium: '布面油画与石墨',
+      museum: '洛杉矶郡立艺术博物馆',
+      reference: {
+        provider: 'LACMA（经 Wikimedia Commons）',
+        url: "https://commons.wikimedia.org/wiki/File:'A_19,_1927'_by_Laszlo_Moholy-Nagy.jpg",
+        verifiedOn: '2026-08-27',
+      },
       description:
         '光、网格与透明平面的交叠，如同机器时代的静物。',
       significance: '莫霍利-纳吉把摄影与光变成设计材料——新媒体艺术的先声。',
@@ -666,14 +775,20 @@ export const artworks: Record<string, Artwork[]> = {
   primitivism: [
     {
       id: 'picasso-mask-study',
-      title: '面具与非洲雕塑研究',
-      titleOriginal: 'Studies after African Masks',
-      artist: 'Pablo Picasso',
-      year: '1907',
-      medium: '纸上素描',
-      museum: '——',
-      description: '对非洲与大洋洲面具的反复临摹，从中提炼出变形的力量。',
-      significance: '原始主义的“挪用”直接催生了《亚维农少女》与立体主义。',
+      title: '条目待替换：非洲面具研究',
+      titleOriginal: 'Curatorial placeholder',
+      artist: 'Pablo Picasso（暂定）',
+      year: '约 1907（待核验）',
+      medium: '未确定',
+      museum: '不适用：当前条目不是可定位的具体作品',
+      reference: {
+        provider: '项目内容审计',
+        url: 'https://www.moma.org/collection/works/79766',
+        verifiedOn: '2026-08-27',
+        note: '未找到与当前题名匹配的权威作品记录；该链接仅作为《亚威农少女》的比较依据，条目仍须替换。',
+      },
+      description: '当前没有找到与原题名对应的权威作品记录，不能继续当作一件具体作品展示。',
+      significance: '保留该卡片仅用于暴露策展缺口；应在确定“原始主义”的命名与范围后整体替换。',
     },
   ],
 
@@ -686,6 +801,13 @@ export const artworks: Record<string, Artwork[]> = {
       year: '1950',
       medium: '布面滴画',
       museum: '大都会艺术博物馆，纽约',
+      reference: {
+        provider: 'The Metropolitan Museum of Art',
+        url: 'https://www.metmuseum.org/art/collection/search/488978',
+        objectId: '57.92',
+        verifiedOn: '2026-08-28',
+        note: '馆藏页明确写明图片不能放大或下载，并标注 Pollock-Krasner Foundation / ARS。',
+      },
       description: '把画布铺在地面，绕着它行走、滴洒、投掷颜料，画面是身体行动的痕迹。',
       significance: '"行动绘画"的巅峰——绘画成为一场被记录下来的事件。',
     },
@@ -696,7 +818,13 @@ export const artworks: Record<string, Artwork[]> = {
       artist: 'Mark Rothko',
       year: '1953',
       medium: '布面油画',
-      museum: '——',
+      museum: '洛杉矶当代艺术博物馆（MOCA）',
+      reference: {
+        provider: 'MOCA Los Angeles',
+        url: 'https://www.moca.org/artworks/no-61-rust-and-blue-brown-blue-brown-on-blue',
+        objectId: '84.9',
+        verifiedOn: '2026-08-27',
+      },
       description: '巨大而漂浮的色块边缘朦胧，仿佛在眼前呼吸。',
       significance: '色域绘画试图用最少的形，唤起近乎宗教体验的情绪。',
     },
@@ -709,8 +837,15 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: "Campbell's Soup Cans",
       artist: 'Andy Warhol',
       year: '1962',
-      medium: '布面丙烯 / 丝网印刷',
+      medium: '布面丙烯与金属珐琅漆，32 联画',
       museum: '现代艺术博物馆 MoMA，纽约',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/collection/works/79809',
+        objectId: '476.1996.1-32',
+        verifiedOn: '2026-08-28',
+        note: '馆藏页确认作品为 32 块画布组成的整体；该件不是丝网印刷版，页面同时标注权利方。',
+      },
       description: '32 个几乎一模一样的汤罐头，像货架一样排列。',
       significance: '把超市商品直接搬上画布，抹平商业与艺术的界线。',
     },
@@ -722,6 +857,13 @@ export const artworks: Record<string, Artwork[]> = {
       year: '1963',
       medium: '布面丙烯',
       museum: '泰特现代美术馆，伦敦',
+      reference: {
+        provider: 'Tate / Roy Lichtenstein Catalogue Raisonné',
+        url: 'https://www.tate.org.uk/art/artworks/lichtenstein-whaam-t00897',
+        objectId: 'T00897 / RLCR 808',
+        verifiedOn: '2026-08-28',
+        note: 'Catalogue Raisonné 交叉确认两联画、1963 年、材料与 Tate 馆藏编号。',
+      },
       description: '放大的漫画空战场景，本戴网点、对话框与拟声词一应俱全。',
       significance: '把廉价的商业印刷美学抬进美术馆，质问“高雅”由谁定义。',
     },
@@ -735,18 +877,31 @@ export const artworks: Record<string, Artwork[]> = {
       artist: 'Cindy Sherman',
       year: '1981',
       medium: '彩色摄影',
-      museum: '——',
+      museum: 'MoMA，纽约',
+      reference: {
+        provider: 'MoMA',
+        url: 'https://www.moma.org/collection/works/46055',
+        objectId: '90.1982.x1-x3',
+        verifiedOn: '2026-08-27',
+      },
       description: '艺术家扮成杂志插页中的少女，眼神迷离地趴在地板上。',
-      significance: '“无题电影剧照”系列揭露大众媒体如何建构女性形象。',
+      significance: '“横幅／中间插页”系列借用杂志构图，揭露大众媒体如何建构女性形象与观看权力。',
     },
     {
       id: 'venturi-vanna',
       title: '文娜·文丘里住宅',
       titleOriginal: 'Vanna Venturi House',
       artist: 'Robert Venturi',
-      year: '1964',
+      year: '1959—64',
+      image: '/artworks/venturi-vanna.webp',
       medium: '建筑',
-      museum: '费城',
+      museum: '费城 Chestnut Hill（私人住宅）',
+      reference: {
+        provider: '美国国会图书馆',
+        url: 'https://www.loc.gov/item/pa4102/',
+        objectId: 'HABS PA-6775',
+        verifiedOn: '2026-08-27',
+      },
       description: '立面是断裂的山墙、歪斜的烟囱与装饰性的拱——向现代主义的方盒子宣战。',
       significance: '后现代建筑的宣言，“少即是乏味”回应密斯的“少即是多”。',
     },
@@ -759,8 +914,14 @@ export const artworks: Record<string, Artwork[]> = {
       titleOriginal: 'The Physical Impossibility of Death in the Mind of Someone Living',
       artist: 'Damien Hirst',
       year: '1991',
-      medium: '虎鲨、甲醛、玻璃柜',
-      museum: '——',
+      medium: '虎鲨、甲醛溶液、玻璃与涂漆钢材',
+      museum: '私人收藏',
+      reference: {
+        provider: '韩国国立现代美术馆（MMCA）',
+        url: 'https://mmca.go.kr/eng/exhibitions/exhibitionsDetail.do?exhFlag=2&exhId=202601220002053',
+        verifiedOn: '2026-08-27',
+        note: '馆方 2026 年展览资料将作品标为私人收藏；图片版权仍受限。',
+      },
       description: '一条真实的虎鲨悬浮在甲醛玻璃柜中，既壮观又令人不安。',
       significance: 'YBA（英国青年艺术家）的标志，把死亡与奇观变成天价商品。',
     },
@@ -772,11 +933,28 @@ export const artworks: Record<string, Artwork[]> = {
       year: '2010',
       medium: '一亿颗手工陶瓷瓜子',
       museum: '泰特现代美术馆涡轮大厅',
+      reference: {
+        provider: 'Tate',
+        url: 'https://www.tate.org.uk/whats-on/tate-modern/unilever-series/unilever-series-ai-weiwei-sunflower-seeds',
+        verifiedOn: '2026-08-28',
+        note: '该链接对应 2010 年涡轮大厅委任项目；作品与具体安装摄影的权利须分别处理。',
+      },
       description: '一亿颗由景德镇工匠手工绘制的陶瓷瓜子铺满整个大厅。',
       significance: '海量个体与“中国制造”、集体劳动与政治隐喻交织。',
     },
   ],
 }
+
+export const artworks: Record<string, Artwork[]> = Object.fromEntries(
+  Object.entries(artworkData).map(([movementId, movementArtworks]) => [
+    movementId,
+    movementArtworks.map((artwork) => {
+      const imageMeta = artworkImageMeta[artwork.id]
+      if (!imageMeta) throw new Error(`作品 ${movementId}/${artwork.id} 缺少图片状态记录`)
+      return { ...artwork, imageMeta }
+    }),
+  ]),
+)
 
 export function artworksOf(movementId: string): Artwork[] {
   return artworks[movementId] ?? []

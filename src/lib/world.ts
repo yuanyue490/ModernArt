@@ -5,13 +5,13 @@
 
 export const YEAR_ORIGIN = 1860
 export const PX_PER_YEAR = 26
+export const YEAR_MIN = 1840
+export const YEAR_MAX = 2026
 
 export const yearToX = (year: number): number => (year - YEAR_ORIGIN) * PX_PER_YEAR
 export const xToYear = (x: number): number => YEAR_ORIGIN + x / PX_PER_YEAR
 
-/** 世界覆盖的时间范围（1860—NOW≈2020，含两端留白） */
-export const YEAR_MAX = 2020
-/** 世界容器尺寸：宽度由时间跨度换算（+ 左右各 260px 呼吸），高度容纳上下分支巷道 */
+/** 世界容器尺寸：覆盖 1840—NOW（当前数据基准 2026），并保留左右呼吸空间 */
 export const WORLD_W = yearToX(YEAR_MAX) + 520
 export const WORLD_H = 1500
 /** 世界 y=0（主巷道）在容器内的纵向偏移 */

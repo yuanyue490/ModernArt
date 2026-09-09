@@ -13,7 +13,7 @@ export function MovementHero({ movement: m }: { movement: Movement }) {
   const longName = m.nameEn.length > 12
 
   return (
-    <section className="relative overflow-hidden px-6 pb-20 pt-32 md:px-12 md:pt-40">
+    <section className="relative overflow-hidden px-6 pb-20 pt-44 md:px-12 md:pt-40">
       {/* 背景母题（大而淡） */}
       <motion.div
         initial={{ opacity: 0, rotate: -4 }}
@@ -57,7 +57,7 @@ export function MovementHero({ movement: m }: { movement: Movement }) {
           className="mt-10 grid gap-10 md:grid-cols-[minmax(0,5fr)_minmax(0,7fr)]"
         >
           <div>
-            <div className="text-sm tracking-[0.2em] text-smoke">{m.name} · 核心问题</div>
+            <div className="text-[15px] font-medium text-ink/75">{m.name} · 核心问题</div>
             <p className="mt-4 font-serifcn text-2xl font-semibold leading-snug text-ink md:text-[2rem]">
               {m.question}
             </p>

@@ -18,24 +18,44 @@ interface FigureProps {
   layout: string
 }
 
+const IMAGE_STATUS_LABEL = {
+  verified: '图像已核验',
+  'needs-review': '来源待复核',
+  'copyright-restricted': '版权受限 · 原作图像暂缺',
+  pending: '原作图像待补',
+  questionable: '作品条目待核验',
+} as const
+
 function ArtworkFigure({ artwork: w, motif, accent, layout }: FigureProps) {
   return (
     <figure className={`group ${layout}`}>
       <div className="relative overflow-hidden bg-ink/[0.04]">
         {w.image ? (
-          <img
-            src={w.image}
-            alt={`${w.title} · ${w.artist}`}
-            loading="lazy"
-            draggable={false}
-            className="block h-auto w-full select-none transition-transform duration-700 ease-out group-hover:scale-[1.035]"
-          />
+          <>
+            <img
+              src={w.image}
+              alt={`${w.title} · ${w.artist}`}
+              loading="lazy"
+              draggable={false}
+              className="block h-auto w-full select-none transition-transform duration-700 ease-out group-hover:scale-[1.035]"
+            />
+            <span
+              className={`absolute right-3 top-3 border px-2 py-1 text-[9px] uppercase tracking-[0.16em] backdrop-blur-sm ${
+                w.imageMeta.status === 'verified'
+                  ? 'border-paper/30 bg-ink/70 text-paper'
+                  : 'border-amber-200/40 bg-ink/75 text-amber-100'
+              }`}
+              title={w.imageMeta.note}
+            >
+              {IMAGE_STATUS_LABEL[w.imageMeta.status]}
+            </span>
+          </>
         ) : (
-          /* 版权原因暂缺原图：以流派母题生成图形占位 */
+          /* 无可靠可用原图：以流派母题生成图形占位，并说明具体原因 */
           <div className="relative flex aspect-[4/3] items-center justify-center bg-ink text-paper">
             <NodeMotif motif={motif} accent={accent} size={150} />
             <span className="absolute bottom-3 right-4 text-[9px] uppercase tracking-[0.22em] text-paper/40">
-              原作图像暂缺 · 生成图形示意
+              {IMAGE_STATUS_LABEL[w.imageMeta.status]} · 生成图形示意
             </span>
           </div>
         )}
@@ -67,6 +87,36 @@ function ArtworkFigure({ artwork: w, motif, accent, layout }: FigureProps) {
         >
           {w.significance}
         </p>
+        <div className="mt-3 flex flex-wrap items-center gap-x-3 gap-y-1 text-[10px] tracking-[0.08em] text-smoke">
+          <span title={w.imageMeta.note}>{IMAGE_STATUS_LABEL[w.imageMeta.status]}</span>
+          {w.imageMeta.sourceUrl ? (
+            <a
+              href={w.imageMeta.sourceUrl}
+              target="_blank"
+              rel="noreferrer"
+              className="underline decoration-ink/20 underline-offset-4 transition-colors hover:text-ink"
+            >
+              {w.imageMeta.provider ?? '图像来源'}
+            </a>
+          ) : null}
+          {w.imageMeta.license ? <span>{w.imageMeta.license}</span> : null}
+          {w.imageMeta.credit ? <span>署名 {w.imageMeta.credit}</span> : null}
+          {w.imageMeta.verifiedOn ? <span>核验于 {w.imageMeta.verifiedOn}</span> : null}
+        </div>
+        {w.reference ? (
+          <div className="mt-2 text-[10px] tracking-[0.08em] text-smoke">
+            <a
+              href={w.reference.url}
+              target="_blank"
+              rel="noreferrer"
+              className="underline decoration-ink/20 underline-offset-4 transition-colors hover:text-ink"
+              title={w.reference.note}
+            >
+              作品资料 · {w.reference.provider}
+              {w.reference.objectId ? ` · ${w.reference.objectId}` : ''}
+            </a>
+          </div>
+        ) : null}
       </figcaption>
     </figure>
   )

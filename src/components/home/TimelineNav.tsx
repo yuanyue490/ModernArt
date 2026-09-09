@@ -1,6 +1,5 @@
-import { useRef } from 'react'
 import { motion } from 'framer-motion'
-import { clamp } from '../../lib/world'
+import { clamp, YEAR_MAX, YEAR_MIN } from '../../lib/world'
 
 interface TimelineNavProps {
   /** 视口中心对应的年份 */
@@ -8,8 +7,8 @@ interface TimelineNavProps {
   onScrub: (year: number) => void
 }
 
-const MIN = 1840
-const MAX = 2020
+const MIN = YEAR_MIN
+const MAX = YEAR_MAX
 const TICKS: number[] = []
 for (let y = MIN; y <= MAX; y += 10) TICKS.push(y)
 
@@ -17,18 +16,7 @@ for (let y = MIN; y <= MAX; y += 10) TICKS.push(y)
  * 常驻极简时间轴（文档 §10）：拖动后整个艺术关系网络随之移动。
  */
 export function TimelineNav({ year, onScrub }: TimelineNavProps) {
-  const trackRef = useRef<HTMLDivElement>(null)
-  const dragging = useRef(false)
-
   const pos = clamp(((year - MIN) / (MAX - MIN)) * 100, 0, 100)
-
-  const scrubTo = (clientX: number) => {
-    const el = trackRef.current
-    if (!el) return
-    const rect = el.getBoundingClientRect()
-    const t = clamp((clientX - rect.left) / rect.width, 0, 1)
-    onScrub(Math.round(MIN + t * (MAX - MIN)))
-  }
 
   return (
     <motion.footer
@@ -36,7 +24,7 @@ export function TimelineNav({ year, onScrub }: TimelineNavProps) {
       animate={{ y: 0, opacity: 1 }}
       exit={{ y: 72, opacity: 0 }}
       transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.25 }}
-      className="absolute inset-x-0 bottom-0 z-30 border-t border-line bg-coal/85 backdrop-blur-sm"
+      className="absolute inset-x-0 bottom-0 z-30 hidden border-t border-line bg-coal/85 backdrop-blur-sm lg:block"
     >
       <div className="flex items-stretch gap-6 px-6 py-3 md:px-10">
         {/* 当前年份读数 */}
@@ -47,17 +35,18 @@ export function TimelineNav({ year, onScrub }: TimelineNavProps) {
 
         {/* 拖动轨道 */}
         <div
-          ref={trackRef}
-          className="relative h-14 flex-1 cursor-ew-resize"
-          onPointerDown={(e) => {
-            dragging.current = true
-            e.currentTarget.setPointerCapture(e.pointerId)
-            scrubTo(e.clientX)
-          }}
-          onPointerMove={(e) => dragging.current && scrubTo(e.clientX)}
-          onPointerUp={() => (dragging.current = false)}
-          onPointerCancel={() => (dragging.current = false)}
+          className="relative h-14 flex-1 cursor-ew-resize focus-within:outline focus-within:outline-1 focus-within:outline-offset-4 focus-within:outline-paper"
         >
+          <input
+            type="range"
+            min={MIN}
+            max={MAX}
+            step={1}
+            value={clamp(year, MIN, MAX)}
+            onChange={(event) => onScrub(Number(event.currentTarget.value))}
+            aria-label="按年份移动艺术史星图"
+            className="absolute inset-0 z-10 h-full w-full cursor-ew-resize opacity-0"
+          />
           <div className="absolute inset-x-0 top-1/2 h-px -translate-y-1/2 bg-line-strong" />
           {TICKS.map((y) => {
             const left = ((y - MIN) / (MAX - MIN)) * 100
@@ -82,7 +71,7 @@ export function TimelineNav({ year, onScrub }: TimelineNavProps) {
 
         <div className="hidden w-32 shrink-0 flex-col items-end justify-center md:flex">
           <span className="text-[9px] uppercase tracking-[0.24em] text-smoke">拖动以穿越时间</span>
-          <span className="font-mono-num mt-1 text-[10px] text-smoke">1860 — NOW</span>
+          <span className="font-mono-num mt-1 text-[10px] text-smoke">1840 — NOW</span>
         </div>
       </div>
     </motion.footer>

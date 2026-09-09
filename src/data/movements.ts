@@ -1,5 +1,5 @@
 import type { Movement } from './types'
-import { yearToX } from '../lib/world'
+import { YEAR_MAX, yearToX } from '../lib/world'
 
 /**
  * 世界坐标约定：x = (year - 1860) * 26，主巷道 y = 0，上下分支 ±170~320。
@@ -54,7 +54,7 @@ export const movements: Movement[] = [
     index: '04',
     name: '塞尚',
     nameEn: 'CÉZANNE',
-    startYear: 1839,
+    startYear: 1870,
     endYear: 1906,
     question: '世界能否被重新组织成基本结构？',
     description:
@@ -213,7 +213,7 @@ export const movements: Movement[] = [
     index: '01',
     name: '现实主义',
     nameEn: 'REALISM',
-    startYear: 1820,
+    startYear: 1848,
     endYear: 1870,
     question: '艺术为什么不能描绘普通人的真实生活？',
     description:
@@ -353,7 +353,7 @@ export const movements: Movement[] = [
     name: '观念艺术',
     nameEn: 'CONCEPTUAL ART',
     startYear: 1952,
-    endYear: 2020,
+    endYear: YEAR_MAX,
     question: '如果思想本身就是作品，还需要艺术品吗？',
     description:
       '观念艺术进一步推进杜尚留下的问题：艺术最重要的可能不是物体，而是一个想法。文字、行为、档案、指令甚至一段描述都可能成为作品。',
@@ -416,7 +416,7 @@ export const movements: Movement[] = [
     name: '当代艺术',
     nameEn: 'CONTEMPORARY',
     startYear: 1988,
-    endYear: 2020,
+    endYear: YEAR_MAX,
     question: '当媒介已经没有边界，艺术还是什么？',
     description:
       '当代艺术不再由一种统一风格定义。装置、影像、互联网、数据、VR、电子游戏、生物技术、人工智能与社会实践都可以成为艺术媒介。艺术的重点越来越从"它看起来是什么"转向"它提出了什么问题"。',

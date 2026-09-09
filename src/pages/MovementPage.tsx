@@ -1,4 +1,4 @@
-import { useEffect } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import { Link, Navigate, useParams } from 'react-router-dom'
 import { motion } from 'framer-motion'
 import { getMovement, liveMovements } from '../data/movements'
@@ -17,9 +17,21 @@ const EASE = [0.22, 1, 0.36, 1] as const
 export default function MovementPage() {
   const { id = '' } = useParams()
   const movement = getMovement(id)
+  const mobileNavRef = useRef<HTMLElement>(null)
+  const chronologicalMovements = useMemo(
+    () => [...liveMovements].sort((a, b) => a.startYear - b.startYear || Number(a.index) - Number(b.index)),
+    [],
+  )
 
   useEffect(() => {
     window.scrollTo(0, 0)
+  }, [id])
+
+  useEffect(() => {
+    const nav = mobileNavRef.current
+    const active = nav?.querySelector<HTMLElement>('[aria-current="page"]')
+    if (!nav || !active) return
+    nav.scrollTo({ left: active.offsetLeft - (nav.clientWidth - active.clientWidth) / 2 })
   }, [id])
 
   if (!movement || movement.ghost) return <Navigate to="/" replace />
@@ -43,9 +55,9 @@ export default function MovementPage() {
           ← 返回星图
         </Link>
 
-        {/* 六个已上线流派的快速跳转 */}
-        <nav className="hidden items-center gap-4 md:flex" aria-label="流派快速导航">
-          {liveMovements.map((m) => (
+        {/* 桌面流派快速跳转 */}
+        <nav className="hidden items-center gap-4 lg:flex" aria-label="流派快速导航">
+          {chronologicalMovements.map((m) => (
             <Link
               key={m.id}
               to={`/movement/${m.id}`}
@@ -66,6 +78,28 @@ export default function MovementPage() {
         <span className="font-mono-num text-[10px] uppercase tracking-[0.24em] text-smoke">
           Modern Art 150
         </span>
+
+        <nav
+          ref={mobileNavRef}
+          className="hide-scrollbar absolute inset-x-0 top-full flex gap-2 overflow-x-auto border-b border-ink/10 bg-paper/92 px-4 py-2.5 backdrop-blur-md lg:hidden"
+          aria-label="流派快速导航"
+        >
+          {chronologicalMovements.map((m) => (
+            <Link
+              key={m.id}
+              to={`/movement/${m.id}`}
+              aria-current={m.id === movement.id ? 'page' : undefined}
+              className="shrink-0 border px-3 py-1.5 text-[13px] outline-none focus-visible:border-ink"
+              style={{
+                borderColor: m.id === movement.id ? m.visualStyle.accent : 'rgba(23, 21, 15, 0.16)',
+                color: m.id === movement.id ? '#17150f' : '#5c574e',
+                background: m.id === movement.id ? `${m.visualStyle.accent}26` : 'transparent',
+              }}
+            >
+              {m.name}
+            </Link>
+          ))}
+        </nav>
       </header>
 
       <MovementHero movement={movement} />

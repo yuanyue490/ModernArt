@@ -10,7 +10,7 @@ function RelationChip({ id, accent }: { id: string; accent?: string }) {
   const inner = (
     <>
       <span className="font-wide text-sm font-bold uppercase tracking-[0.1em]">{target.nameEn}</span>
-      <span className="mt-0.5 text-[11px] text-smoke">
+      <span className="mt-1 text-[13px] font-medium text-ink/75">
         {target.name} · {target.startYear}
         {target.endYear ? `—${target.endYear}` : ''}
       </span>
@@ -82,7 +82,7 @@ export function RelationFooter({ movement: m }: { movement: Movement }) {
             <div className="font-wide text-2xl font-extrabold uppercase tracking-[0.06em] text-ink">
               {m.nameEn}
             </div>
-            <div className="mt-1 text-xs text-smoke">{m.name}</div>
+            <div className="mt-1.5 text-[15px] font-medium text-ink/80">{m.name}</div>
           </div>
         </Reveal>
 
@@ -116,7 +116,7 @@ export function RelationFooter({ movement: m }: { movement: Movement }) {
             <div className="font-wide mt-3 text-xl font-extrabold uppercase text-ink transition-transform duration-300 group-hover:translate-x-2 md:text-2xl">
               {prev.nameEn}
             </div>
-            <div className="mt-1 text-xs text-smoke">{prev.name}</div>
+            <div className="mt-1.5 text-[15px] font-medium text-ink/80">{prev.name}</div>
           </Link>
         ) : (
           <div />
@@ -130,7 +130,7 @@ export function RelationFooter({ movement: m }: { movement: Movement }) {
             <div className="font-wide mt-3 text-xl font-extrabold uppercase text-ink transition-transform duration-300 group-hover:-translate-x-2 md:text-2xl">
               {next.nameEn}
             </div>
-            <div className="mt-1 text-xs text-smoke">{next.name}</div>
+            <div className="mt-1.5 text-[15px] font-medium text-ink/80">{next.name}</div>
           </Link>
         ) : (
           <div />

@@ -11,6 +11,7 @@ import {
 import { SpatialMap } from '../components/map/SpatialMap'
 import { Hero } from '../components/home/Hero'
 import { TimelineNav } from '../components/home/TimelineNav'
+import { MobileTimeline } from '../components/home/MobileTimeline'
 import { cameraStore } from '../lib/cameraStore'
 import { computeFit, focusCamera } from '../lib/fit'
 import { yearToX } from '../lib/world'
@@ -121,13 +122,26 @@ export default function Home() {
     [camX, camY, zoom, navigate, reducedMotion],
   )
 
+  const selectMobile = useCallback(
+    (m: Movement) => {
+      cameraStore.lastFocusId = m.id
+      navigate(`/movement/${m.id}`)
+    },
+    [navigate],
+  )
+
   return (
     <motion.main
       exit={{ opacity: 0, transition: { duration: 0.4 } }}
       className="fixed inset-0 overflow-hidden bg-coal"
     >
       {/* 2.5D 透视包装：Hero 态下随鼠标轻微倾斜 */}
-      <div className="absolute inset-0" style={{ perspective: 1500 }}>
+      <div
+        className={`absolute inset-0 ${entered ? 'hidden lg:block' : 'block'}`}
+        style={{ perspective: 1500 }}
+        aria-hidden={!entered}
+        inert={!entered}
+      >
         <motion.div
           className="absolute inset-0"
           animate={{ scale: entered ? 1 : 1.045 }}
@@ -169,9 +183,14 @@ export default function Home() {
             entered ? 'opacity-100' : 'opacity-0'
           }`}
         >
-          拖拽平移 · 滚轮缩放 · 点击节点进入
+          <span className="lg:hidden">线性时间浏览</span>
+          <span className="hidden lg:inline">拖拽平移 · 滚轮缩放 · 点击节点进入</span>
         </div>
       </header>
+
+      <AnimatePresence>
+        {entered && <MobileTimeline onSelect={selectMobile} reducedMotion={reducedMotion} />}
+      </AnimatePresence>
 
       {/* 底部时间轴 */}
       <AnimatePresence>{entered && <TimelineNav year={viewYear} onScrub={scrubTo} />}</AnimatePresence>

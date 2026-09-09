@@ -1,6 +1,10 @@
 #!/usr/bin/env bash
 # 从 Wikimedia Commons 下载公有领域作品图到 public/artworks/
 # 每个条目依次尝试多个候选文件名，成功后用 `file` 校验是否为真实图片。
+echo "STOP: fetch-art.sh 已停用；它会把未核验候选直接写入正式图片目录。请使用 node scripts/fetch-missing.mjs 获取临时候选，再人工核验并登记来源。" >&2
+exit 1
+
+# 以下内容仅保留为历史候选文件名记录，不再执行。
 set -u
 cd "$(dirname "$0")/.."
 OUT=public/artworks

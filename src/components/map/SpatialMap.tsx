@@ -168,16 +168,84 @@ export function SpatialMap({
 
   const neighbors = hovered ? neighborIds(hovered) : null
 
+  const zoomAtCenter = (factor: number) => {
+    const el = ref.current
+    if (!el) return
+    const px = el.clientWidth / 2
+    const py = el.clientHeight / 2
+    const z0 = zoom.get()
+    const z1 = clamp(z0 * factor, ZOOM_MIN, ZOOM_MAX)
+    const k = z1 / z0
+    applyCam(px - (px - camX.get()) * k, py - (py - camY.get()) * k, z1)
+  }
+
+  const resetView = () => {
+    const el = ref.current
+    if (!el) return
+    const fit = computeFit(el.clientWidth, el.clientHeight)
+    applyCam(fit.x, fit.y, fit.zoom)
+  }
+
+  const onKeyDown = (event: React.KeyboardEvent<HTMLDivElement>) => {
+    if (event.target !== event.currentTarget) return
+    const panStep = event.shiftKey ? 180 : 72
+    const actions: Record<string, () => void> = {
+      ArrowLeft: () => applyCam(camX.get() + panStep, camY.get(), zoom.get()),
+      ArrowRight: () => applyCam(camX.get() - panStep, camY.get(), zoom.get()),
+      ArrowUp: () => applyCam(camX.get(), camY.get() + panStep, zoom.get()),
+      ArrowDown: () => applyCam(camX.get(), camY.get() - panStep, zoom.get()),
+      '+': () => zoomAtCenter(1.18),
+      '=': () => zoomAtCenter(1.18),
+      '-': () => zoomAtCenter(1 / 1.18),
+      Home: resetView,
+    }
+    const action = actions[event.key]
+    if (!action) return
+    event.preventDefault()
+    action()
+  }
+
   return (
     <div
       ref={ref}
-      className="absolute inset-0 overflow-hidden"
+      className="absolute inset-0 overflow-hidden outline-none focus-visible:ring-1 focus-visible:ring-inset focus-visible:ring-paper/70"
       style={{ cursor: entered ? 'grab' : 'default', touchAction: 'none' }}
+      role="region"
+      aria-label="现代艺术流派关系星图。使用方向键平移，加减键缩放，Home 键返回全景。"
+      tabIndex={entered ? 0 : -1}
+      onKeyDown={onKeyDown}
       onPointerDown={onPointerDown}
       onPointerMove={onPointerMove}
       onPointerUp={endPan}
       onPointerCancel={endPan}
     >
+      {entered && (
+        <div className="absolute bottom-24 right-8 z-50 hidden items-center border border-line bg-coal/90 lg:flex">
+          <button
+            type="button"
+            onClick={() => zoomAtCenter(1 / 1.18)}
+            className="h-10 w-10 border-r border-line text-lg text-paper outline-none hover:bg-paper hover:text-ink focus-visible:bg-paper focus-visible:text-ink"
+            aria-label="缩小星图"
+          >
+            −
+          </button>
+          <button
+            type="button"
+            onClick={resetView}
+            className="h-10 border-r border-line px-3 text-[9px] uppercase tracking-[0.18em] text-smoke outline-none hover:bg-paper hover:text-ink focus-visible:bg-paper focus-visible:text-ink"
+          >
+            全景
+          </button>
+          <button
+            type="button"
+            onClick={() => zoomAtCenter(1.18)}
+            className="h-10 w-10 text-lg text-paper outline-none hover:bg-paper hover:text-ink focus-visible:bg-paper focus-visible:text-ink"
+            aria-label="放大星图"
+          >
+            +
+          </button>
+        </div>
+      )}
       {/* 远景：尘埃与坐标点（0.82 倍速视差） */}
       <motion.div className="absolute left-0 top-0" style={{ x: dustX, y: dustY }}>
         <DustLayer />
@@ -196,6 +264,7 @@ export function SpatialMap({
               key={m.id}
               movement={m}
               index={i}
+              zoom={zoom}
               reducedMotion={reducedMotion}
               visualState={
                 hovered === null

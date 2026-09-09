@@ -1,4 +1,4 @@
-import { AnimatePresence, motion } from 'framer-motion'
+import { AnimatePresence, motion, useTransform, type MotionValue } from 'framer-motion'
 import type { Movement } from '../../data/types'
 import { OY } from '../../lib/world'
 import { NodeMotif } from './NodeMotif'
@@ -9,9 +9,15 @@ interface MovementNodeProps {
   movement: Movement
   visualState: NodeVisualState
   index: number
+  zoom: MotionValue<number>
   onHover: (id: string | null) => void
   onSelect: (movement: Movement) => void
   reducedMotion: boolean
+}
+
+/** 全景缩得太小时，标签按接近 0.62 倍缩放来补偿，避免中文名糊成灰点。 */
+function labelCompensation(z: number) {
+  return Math.min(Math.max(0.62 / z, 1), 1.85)
 }
 
 const OPACITY: Record<NodeVisualState, number> = {
@@ -29,6 +35,7 @@ export function MovementNode({
   movement: m,
   visualState,
   index,
+  zoom,
   onHover,
   onSelect,
   reducedMotion,
@@ -36,6 +43,8 @@ export function MovementNode({
   const ghost = Boolean(m.ghost)
   const active = visualState === 'active'
   const years = `${m.startYear}${m.endYear ? `—${m.endYear}` : ''}`
+  const compactTitle = m.nameEn.length > 12
+  const labelScale = useTransform(zoom, labelCompensation)
 
   return (
     <div
@@ -73,7 +82,7 @@ export function MovementNode({
             onBlur={() => onHover(null)}
             onClick={() => !ghost && onSelect(m)}
             tabIndex={ghost ? -1 : 0}
-            className={`group flex w-60 flex-col items-center gap-3 bg-transparent p-2 text-center outline-none ${
+            className={`group flex w-64 flex-col items-center gap-3 bg-transparent p-2 text-center outline-none ${
               ghost ? 'cursor-default' : 'cursor-pointer'
             }`}
           >
@@ -82,19 +91,35 @@ export function MovementNode({
               accent={m.visualStyle.accent}
               size={ghost ? 64 : 104}
             />
-            <div>
+            <motion.div
+              style={{ scale: labelScale }}
+              className="origin-top"
+            >
               <div
-                className={`font-wide font-extrabold uppercase tracking-[0.16em] ${
-                  ghost ? 'text-[12px] text-smoke' : 'text-[15px] text-paper'
+                className={`font-wide font-extrabold uppercase tracking-[0.08em] ${
+                  ghost
+                    ? 'text-[13px] text-paper/50'
+                    : compactTitle
+                      ? 'text-[16px] text-paper'
+                      : 'text-[17px] text-paper'
                 }`}
+                style={{ textShadow: '0 1px 10px rgba(13,12,10,0.9)' }}
               >
                 {m.nameEn}
               </div>
-              <div className="mt-1 text-xs text-smoke">
+              <div
+                className={`mt-1.5 leading-snug ${
+                  ghost ? 'text-[13px] text-paper/45' : 'text-[16px] font-medium text-paper'
+                }`}
+                style={{ textShadow: '0 1px 10px rgba(13,12,10,0.9)' }}
+              >
                 {m.name}
-                <span className="font-mono-num"> · {years}</span>
+                <span className={`font-mono-num ${ghost ? 'text-paper/35' : 'text-paper/55'}`}>
+                  {' '}
+                  · {years}
+                </span>
               </div>
-            </div>
+            </motion.div>
           </button>
 
           {/* Hover 信息卡：名称 / 英文名 / 时间 / 一句话核心思想 */}

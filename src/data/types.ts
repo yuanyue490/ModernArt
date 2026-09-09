@@ -12,6 +12,40 @@ export interface Artist {
   note: string
 }
 
+export type ArtworkImageStatus =
+  | 'verified'
+  | 'needs-review'
+  | 'copyright-restricted'
+  | 'pending'
+  | 'questionable'
+
+export interface ArtworkImageMeta {
+  /** 图片当前可信状态；只有 verified 代表已完成人工身份与许可核验 */
+  status: ArtworkImageStatus
+  /** 面向维护者与前台的简短说明 */
+  note: string
+  provider?: string
+  providerId?: string
+  sourceUrl?: string
+  license?: string
+  credit?: string
+  verifiedOn?: string
+  /** 本地正式展示文件的 SHA-256；无图条目不填写 */
+  sha256?: string
+  /** 因“不删除文件”规则暂时保留、但不得展示的旧资源 */
+  retainedAsset?: string
+}
+
+export interface ArtworkReference {
+  /** 用于确认作品身份、版本、馆藏或现状的资料来源；与图片授权来源分开 */
+  provider: string
+  url: string
+  /** 馆藏编号、档案号或其它稳定标识 */
+  objectId?: string
+  verifiedOn: string
+  note?: string
+}
+
 export interface Artwork {
   id: string
   title: string
@@ -22,9 +56,13 @@ export interface Artwork {
 
   /** 本地图片路径（public/artworks/...）；为空则用生成式图形占位 */
   image?: string
+  /** 图片身份、来源、授权与核验状态；所有作品都必须有记录 */
+  imageMeta: ArtworkImageMeta
 
   medium?: string
   museum?: string
+  /** 作品身份/馆藏依据；迁移期间允许缺省，缺失项由内容校验继续提示 */
+  reference?: ArtworkReference
 
   description: string
   /** 为什么重要 */
@@ -58,6 +96,7 @@ export interface Movement {
   name: string
   nameEn: string
 
+  /** 流派/艺术阶段的起点，不得用艺术家出生年代替 */
   startYear: number
   endYear?: number
 
